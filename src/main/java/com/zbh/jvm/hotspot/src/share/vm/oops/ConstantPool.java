@@ -29,4 +29,24 @@ public class ConstantPool {
 
         cpMap = new HashMap<>(capacity);
     }
+
+    public Object put(Integer key, Object value) {
+        return cpMap.put(key, value);
+    }
+
+    public Object get(Integer key) {
+        return cpMap.get(key);
+    }
+
+    public String getClassInfo(Integer key) throws Exception {
+
+        Object o = cpMap.get(key);
+        if (o instanceof Integer) {
+            return getClassInfo((Integer) o);
+        } else if (o instanceof String) {
+            return (String) o;
+        } else {
+            throw new Exception("不应该发生的异常");
+        }
+    }
 }

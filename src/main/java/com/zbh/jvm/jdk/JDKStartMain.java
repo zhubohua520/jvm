@@ -9,7 +9,7 @@ public class JDKStartMain {
 
     public static void main(String[] args) throws Exception {
 
-        String path = "com.zbh.jvm.example.HelloWorld";
+        String path = "com.zbh.jvm.example.InterfaceTest";
         System.out.println(path);
 
         BootClassLoader.loadClass(path);

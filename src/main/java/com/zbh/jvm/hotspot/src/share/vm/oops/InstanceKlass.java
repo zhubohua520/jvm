@@ -13,9 +13,11 @@ public class InstanceKlass extends Klass {
 
     private int constantPoolCount; //u2
 
-    private ConstantPool constantPool; //size:constantPoolCount-1 TODO 为什么要减1？
+    private ConstantPool constantPool; //size:constantPoolCount-1
 
     private int accessFlags; //u2
+
+    private int thisClass; //u2
 
     private int superClass; //u2
 

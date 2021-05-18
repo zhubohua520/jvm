@@ -1,6 +1,15 @@
 package com.zbh.jvm.hotspot.src.share.vm.oops;
 
 
-//FIXME 在jvm里面没有找到这个类，可能没有？或者不叫这个名字
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
 public class InterfaceInfo {
+
+    private int constantPoolIndex;
+
+    private String interfaceName;
+
 }
