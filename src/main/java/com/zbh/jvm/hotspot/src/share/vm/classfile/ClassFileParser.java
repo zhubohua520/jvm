@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.charset.CharsetEncoder;
 import java.nio.charset.StandardCharsets;
 
 public class ClassFileParser {
