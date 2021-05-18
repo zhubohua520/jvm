@@ -14,8 +14,8 @@ import java.nio.charset.StandardCharsets;
 
 public class ClassFileParser {
 
-    
-    private static Logger logger = LoggerFactory.getLogger(BootClassLoader.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(BootClassLoader.class);
 
 
     public static InstanceKlass parseClassFile(FileInputStream fis) throws Exception {
@@ -52,6 +52,7 @@ public class ClassFileParser {
         //接口
         parseInterface(fis, instanceKlass);
 
+
         return instanceKlass;
     }
 
@@ -83,7 +84,7 @@ public class ClassFileParser {
 
                     constantPool.put(i, classIndex << 16 | nameAndTypeIndex);
 
-                    logger.debug("解析第{}个:{},值为{}", i, "JVM_CONSTANT_Methodref",
+                    logger.debug("解析第{}个:{},值:{}", i, "JVM_CONSTANT_Methodref",
                             "0x" + Integer.toHexString((int) constantPool.get(i)));
                     break;
                 }
@@ -96,7 +97,7 @@ public class ClassFileParser {
 
                     constantPool.put(i, classIndex << 16 | nameAndTypeIndex);
 
-                    logger.debug("解析第{}个:{},值为{}", i, "JVM_CONSTANT_Fieldref",
+                    logger.debug("解析第{}个:{},值:{}", i, "JVM_CONSTANT_Fieldref",
                             "0x" + Integer.toHexString((int) constantPool.get(i)));
                     break;
                 }
@@ -107,7 +108,7 @@ public class ClassFileParser {
 
                     constantPool.put(i, stringIndex);
 
-                    logger.debug("解析第{}个:{},值为{}", i, "JVM_CONSTANT_String",
+                    logger.debug("解析第{}个:{},值:{}", i, "JVM_CONSTANT_String",
                             "0x" + Integer.toHexString((int) constantPool.get(i)));
                     break;
                 }
@@ -118,7 +119,7 @@ public class ClassFileParser {
 
                     constantPool.put(i, nameIndex);
 
-                    logger.debug("解析第{}个:{},值为{}", i, "JVM_CONSTANT_Class",
+                    logger.debug("解析第{}个:{},值:{}", i, "JVM_CONSTANT_Class",
                             "0x" + Integer.toHexString((int) constantPool.get(i)));
                     break;
                 }
@@ -138,7 +139,7 @@ public class ClassFileParser {
 
                     constantPool.put(i, string);
 
-                    logger.debug("解析第{}个:{},值为{}", i, "JVM_CONSTANT_Utf8", constantPool.get(i));
+                    logger.debug("解析第{}个:{},值:{}", i, "JVM_CONSTANT_Utf8", constantPool.get(i));
                     break;
 
 
@@ -151,7 +152,7 @@ public class ClassFileParser {
                     int descriptorIndex = BytesConverter.toInt(descriptorIndexBytes);
                     constantPool.put(i, nameIndex << 16 | descriptorIndex);
 
-                    logger.debug("解析第{}个:{},值为{}", i, "JVM_CONSTANT_NameAndType",
+                    logger.debug("解析第{}个:{},值:{}", i, "JVM_CONSTANT_NameAndType",
                             "0x" + Integer.toHexString((int) constantPool.get(i)));
 
                     break;
@@ -179,10 +180,13 @@ public class ClassFileParser {
             int constantPoolIndex = BytesConverter.toInt(interfaceBytes);
             InterfaceInfo interfaceInfo = new InterfaceInfo(constantPoolIndex, instanceKlass.getConstantPool().getClassInfo(constantPoolIndex));
             interfaceInfos[i] = interfaceInfo;
+
+            logger.debug("第{}个接口信息：{}", i + 1, interfaceInfo);
         }
 
-        instanceKlass.setInterfaces(interfaceInfos);
-
+        if (count > 0) {
+            instanceKlass.setInterfaces(interfaceInfos);
+        }
 
     }
 
@@ -191,7 +195,7 @@ public class ClassFileParser {
 
         byte[] bytes = new byte[capacity];
 
-        fis.read(bytes);
+        int read = fis.read(bytes);
 
 
         return bytes;
