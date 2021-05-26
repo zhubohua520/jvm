@@ -23,11 +23,22 @@ public class ConstantPool {
     public static final int JVM_CONSTANT_ExternalMax = 18;  /* Last tag found in classfiles */
 
 
-    Map<Integer, Object> cpMap;
+    private final Map<Integer, Object> cpMap;
+
+    private int[] tags;
+
+    public int getTag(int key) {
+        return tags[key];
+    }
+
+    public void setTag(int key, int constantType) {
+        tags[key] = constantType;
+    }
 
     public ConstantPool(int capacity) {
 
         cpMap = new HashMap<>(capacity);
+        tags = new int[capacity];
     }
 
     public Object put(Integer key, Object value) {
@@ -38,15 +49,72 @@ public class ConstantPool {
         return cpMap.get(key);
     }
 
-    public String getClassInfo(Integer key) throws Exception {
+    public String getStr(Integer key) throws Exception {
 
         Object o = cpMap.get(key);
         if (o instanceof Integer) {
-            return getClassInfo((Integer) o);
+            return getStr((Integer) o);
         } else if (o instanceof String) {
             return (String) o;
         } else {
             throw new Exception("不应该发生的异常");
         }
     }
+
+
+    /**
+     * 三种常量池类型：Fieldref_info,Methodref_info,InterfaceMethodref_info的结构是一样的
+     *
+     * @param key 这三种常量池的key
+     * @return
+     * @throws Exception
+     */
+    public String getClassInfoByRefInfo(Integer key) throws Exception {
+        int refInfoKey = (int) cpMap.get(key);
+
+        int classInfoKey = refInfoKey >> 16;
+
+        return getStr(classInfoKey);
+    }
+
+    /**
+     * 三种常量池类型：Fieldref_info,Methodref_info,InterfaceMethodref_info的结构是一样的
+     *
+     * @param key 这三种常量池的key
+     * @return 可以是方法名或者属性名
+     * @throws Exception
+     */
+    public String getNameByRefInfo(Integer key) {
+        int refInfoKey = (int) cpMap.get(key);
+
+        int nameAndTypeInfoKey = refInfoKey & 0xFF;
+
+        int nameAndTypeInfo = (int) get(nameAndTypeInfoKey);
+
+
+        int nameKey = nameAndTypeInfo >> 16;
+
+        return (String) get(nameKey);
+    }
+
+    /**
+     * 三种常量池类型：Fieldref_info,Methodref_info,InterfaceMethodref_info的结构是一样的
+     *
+     * @param key 这三种常量池的key
+     * @return 描述符
+     */
+    public String getTypeByRefInfo(Integer key) {
+        int refInfoKey = (int) cpMap.get(key);
+
+        int nameAndTypeInfoKey = refInfoKey & 0xFF;
+
+        int nameAndTypeInfo = (int) get(nameAndTypeInfoKey);
+
+
+        int typeKey = nameAndTypeInfo & 0xFF;
+
+        return (String) get(typeKey);
+    }
+
+
 }

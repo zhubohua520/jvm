@@ -93,7 +93,7 @@ public class ClassFileParser {
             byte aByte = readByte(fis);
             int tag = BytesConverter.toInt(aByte);
 
-
+            constantPool.setTag(i, tag);
             switch (tag) {
                 case ConstantPool.JVM_CONSTANT_Methodref: {
 
@@ -209,7 +209,7 @@ public class ClassFileParser {
             byte[] interfaceBytes = readBytes(fis, 2);
             int constantPoolIndex = BytesConverter.toInt(interfaceBytes);
             InterfaceInfo interfaceInfo = new InterfaceInfo(constantPoolIndex,
-                    instanceKlass.getConstantPool().getClassInfo(constantPoolIndex));
+                    instanceKlass.getConstantPool().getStr(constantPoolIndex));
             interfaceInfos[i] = interfaceInfo;
 
             logger.debug("第{}个接口信息：{}", i + 1, interfaceInfo);
@@ -256,9 +256,12 @@ public class ClassFileParser {
 
         int methodCount = instanceKlass.getMethodCount();
 
+        Method[] methods = new Method[methodCount];
         for (int i = 0; i < methodCount; i++) {
 
             Method method = new Method();
+            method.setBelongKlass(instanceKlass);
+
             method.setAccessFlags(BytesConverter.toInt(readBytes(fis, 2)));
 
             method.setNameIndex(BytesConverter.toInt(readBytes(fis, 2)));
@@ -274,12 +277,14 @@ public class ClassFileParser {
                 }
                 method.setAttributes(attributeInfos);
             }
+            methods[i] = method;
 
             logger.debug("解析第{}个方法，值：{}", i + 1, method);
 
 
         }
 
+        instanceKlass.setMethods(methods);
 
     }
 

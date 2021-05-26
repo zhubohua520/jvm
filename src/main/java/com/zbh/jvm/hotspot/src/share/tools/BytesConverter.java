@@ -40,6 +40,17 @@ public class BytesConverter {
         return toInt(new byte[]{aByte}, true);
     }
 
+    public static int toUnsignedInt(byte aByte) {
+
+        return Byte.toUnsignedInt(aByte);
+    }
+
+    //没试过，可能有问题
+    public static int toUnsignedInt(byte[] bytes) {
+
+        return (bytes[0] & 0xFF << 8) | (bytes[1] & 0xFF);
+    }
+
 
     public static String toHexBinaryStr(byte[] bytes) {
 
