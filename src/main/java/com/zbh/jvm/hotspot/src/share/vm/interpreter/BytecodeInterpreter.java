@@ -72,6 +72,12 @@ public class BytecodeInterpreter {
 
                             break;
                         }
+                        case ConstantPool.JVM_CONSTANT_Float: {
+                            float aFloat = (float) constantPool.get(key);
+
+                            frame.getStack().push(new StackValue(BasicType.T_FLOAT, aFloat));
+                            break;
+                        }
                         default:
                             throw new Exception("未解析的类型");
 
@@ -153,14 +159,14 @@ public class BytecodeInterpreter {
                         case ConstantPool.JVM_CONSTANT_Long: {
 
                             long l = (long) constantPool.get(key);
-                            frame.getStack().push(new StackValue(BasicType.T_LONG, l));
+                            frame.getStack().pushLong(l);
+//                            frame.getStack().push(new StackValue(BasicType.T_LONG, l));
 
                             break;
                         }
                         case ConstantPool.JVM_CONSTANT_Double: {
 
                             double d = (double) constantPool.get(key);
-                            //TODO 这里没写完
                             frame.getStack().pushDouble(d);
 
                             break;
@@ -171,6 +177,204 @@ public class BytecodeInterpreter {
                     }
 
 
+                    break;
+                }
+                case ByteCodes._istore_1: {
+                    logger.debug("执行指令：{}", "istore_1");
+
+                    StackValue value = frame.getStack().pop();
+                    frame.getLocals().add(1, value);
+                    break;
+                }
+                case ByteCodes._istore_2: {
+                    logger.debug("执行指令：{}", "istore_2");
+
+                    StackValue value = frame.getStack().pop();
+                    frame.getLocals().add(2, value);
+                    break;
+                }
+                case ByteCodes._istore_3: {
+                    logger.debug("执行指令：{}", "istore_3");
+
+                    StackValue value = frame.getStack().pop();
+                    frame.getLocals().add(3, value);
+                    break;
+                }
+                case ByteCodes._iload_1: {
+                    logger.debug("执行指令：{}", "iload_1");
+
+                    StackValue stackValue = frame.getLocals().get(1);
+                    frame.getStack().push(stackValue);
+                    break;
+                }
+                case ByteCodes._iload_2: {
+                    logger.debug("执行指令：{}", "iload_2");
+
+                    StackValue stackValue = frame.getLocals().get(2);
+                    frame.getStack().push(stackValue);
+                    break;
+                }
+                case ByteCodes._iload_3: {
+                    logger.debug("执行指令：{}", "iload_3");
+
+                    StackValue stackValue = frame.getLocals().get(3);
+                    frame.getStack().push(stackValue);
+                    break;
+                }
+                case ByteCodes._lstore_1: {
+                    logger.debug("执行指令：{}", "lstore_1");
+
+                    StackValue value1 = frame.getStack().pop();
+                    StackValue value2 = frame.getStack().pop();
+                    frame.getLocals().add(1, value2);
+                    frame.getLocals().add(2, value1);
+                    break;
+                }
+                case ByteCodes._lstore_2: {
+                    logger.debug("执行指令：{}", "lstore_2");
+
+                    StackValue value1 = frame.getStack().pop();
+                    StackValue value2 = frame.getStack().pop();
+                    frame.getLocals().add(2, value2);
+                    frame.getLocals().add(3, value1);
+                    break;
+                }
+                case ByteCodes._lstore_3: {
+                    logger.debug("执行指令：{}", "lstore_3");
+
+                    StackValue value1 = frame.getStack().pop();
+                    StackValue value2 = frame.getStack().pop();
+                    frame.getLocals().add(3, value2);
+                    frame.getLocals().add(4, value1);
+                    break;
+                }
+                case ByteCodes._lload_1: {
+                    logger.debug("执行指令：{}", "lload_1");
+
+                    StackValue value1 = frame.getLocals().get(1);
+                    StackValue value2 = frame.getLocals().get(2);
+                    frame.getStack().push(value1);
+                    frame.getStack().push(value2);
+
+                    break;
+                }
+                case ByteCodes._lload_2: {
+                    logger.debug("执行指令：{}", "lload_2");
+
+                    StackValue value1 = frame.getLocals().get(2);
+                    StackValue value2 = frame.getLocals().get(3);
+                    frame.getStack().push(value1);
+                    frame.getStack().push(value2);
+
+                    break;
+                }
+                case ByteCodes._lload_3: {
+                    logger.debug("执行指令：{}", "lload_3");
+
+                    StackValue value1 = frame.getLocals().get(3);
+                    StackValue value2 = frame.getLocals().get(4);
+                    frame.getStack().push(value1);
+                    frame.getStack().push(value2);
+
+                    break;
+                }
+                case ByteCodes._dstore_1: {
+                    logger.debug("执行指令：{}", "dstore_1");
+
+                    StackValue value1 = frame.getStack().pop();
+                    StackValue value2 = frame.getStack().pop();
+                    frame.getLocals().add(1, value2);
+                    frame.getLocals().add(2, value1);
+                    break;
+                }
+                case ByteCodes._dstore_2: {
+                    logger.debug("执行指令：{}", "dstore_2");
+
+                    StackValue value1 = frame.getStack().pop();
+                    StackValue value2 = frame.getStack().pop();
+                    frame.getLocals().add(2, value2);
+                    frame.getLocals().add(3, value1);
+                    break;
+                }
+                case ByteCodes._dstore_3: {
+                    logger.debug("执行指令：{}", "dstore_3");
+
+                    StackValue value1 = frame.getStack().pop();
+                    StackValue value2 = frame.getStack().pop();
+                    frame.getLocals().add(3, value2);
+                    frame.getLocals().add(4, value1);
+                    break;
+                }
+                case ByteCodes._dload_1: {
+                    logger.debug("执行指令：{}", "dload_1");
+
+                    StackValue value1 = frame.getLocals().get(1);
+                    StackValue value2 = frame.getLocals().get(2);
+                    frame.getStack().push(value1);
+                    frame.getStack().push(value2);
+
+                    break;
+                }
+                case ByteCodes._dload_2: {
+                    logger.debug("执行指令：{}", "dload_2");
+
+                    StackValue value1 = frame.getLocals().get(2);
+                    StackValue value2 = frame.getLocals().get(3);
+                    frame.getStack().push(value1);
+                    frame.getStack().push(value2);
+
+                    break;
+                }
+                case ByteCodes._dload_3: {
+                    logger.debug("执行指令：{}", "dload_3");
+
+                    StackValue value1 = frame.getLocals().get(3);
+                    StackValue value2 = frame.getLocals().get(4);
+                    frame.getStack().push(value1);
+                    frame.getStack().push(value2);
+
+                    break;
+                }
+                case ByteCodes._fstore_1: {
+                    logger.debug("执行指令：{}", "fstore_1");
+
+                    StackValue value = frame.getStack().pop();
+                    frame.getLocals().add(1, value);
+                    break;
+                }
+                case ByteCodes._fstore_2: {
+                    logger.debug("执行指令：{}", "fstore_2");
+
+                    StackValue value = frame.getStack().pop();
+                    frame.getLocals().add(2, value);
+                    break;
+                }
+                case ByteCodes._fstore_3: {
+                    logger.debug("执行指令：{}", "fstore_3");
+
+                    StackValue value = frame.getStack().pop();
+                    frame.getLocals().add(3, value);
+                    break;
+                }
+                case ByteCodes._fload_1: {
+                    logger.debug("执行指令：{}", "fload_1");
+
+                    StackValue stackValue = frame.getLocals().get(1);
+                    frame.getStack().push(stackValue);
+                    break;
+                }
+                case ByteCodes._fload_2: {
+                    logger.debug("执行指令：{}", "fload_2");
+
+                    StackValue stackValue = frame.getLocals().get(2);
+                    frame.getStack().push(stackValue);
+                    break;
+                }
+                case ByteCodes._fload_3: {
+                    logger.debug("执行指令：{}", "fload_3");
+
+                    StackValue stackValue = frame.getLocals().get(3);
+                    frame.getStack().push(stackValue);
                     break;
                 }
                 default:

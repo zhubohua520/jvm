@@ -49,13 +49,18 @@ public class DescriptorStream {
                     break;
                 }
                 case BasicType.T_LONG: {
-                    stackValue = frame.getStack().pop();
-                    objects[i] = stackValue.getObject();
+                    long d = frame.getStack().popLong();
+                    objects[i] = d;
                     break;
                 }
                 case BasicType.T_DOUBLE: {
                     double d = frame.getStack().popDouble();
                     objects[i] = d;
+                    break;
+                }
+                case BasicType.T_FLOAT: {
+                    stackValue = frame.getStack().pop();
+                    objects[i] = stackValue.getObject();
                     break;
                 }
                 default:
@@ -161,6 +166,17 @@ public class DescriptorStream {
                         returnClass = new ReturnClass();
                         returnClass.setAClass(double.class);
                         returnClass.setStackType(BasicType.T_DOUBLE);
+                    }
+                    break;
+                }
+                case BasicType.JVM_SIGNATURE_FLOAT:{
+                    logger.debug("类型为float");
+                    if (phase) {
+                        parameterTypes.add(float.class);
+                    } else {
+                        returnClass = new ReturnClass();
+                        returnClass.setAClass(float.class);
+                        returnClass.setStackType(BasicType.T_FLOAT);
                     }
                     break;
                 }

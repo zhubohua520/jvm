@@ -218,6 +218,15 @@ public class ClassFileParser {
                     i++;
                     break;
                 }
+                case ConstantPool.JVM_CONSTANT_Float:{
+                    byte[] bytes = readBytes(fis, 4);
+
+                    constantPool.put(i, BytesConverter.toFloat(bytes));
+
+                    logger.debug("解析第{}个:{},值:{}", i, "JVM_CONSTANT_Float",
+                            constantPool.get(i));
+                    break;
+                }
                 default:
                     throw new Exception("未知的常量池类型");
             }

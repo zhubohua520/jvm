@@ -36,8 +36,6 @@ public class StackValueCollection {
 
         int anInt1 = bb.getInt(0);
 
-        // 为了后面取数据
-//        bb.order(ByteOrder.LITTLE_ENDIAN);
         int anInt2 = bb.getInt(4);
 
 
@@ -48,6 +46,22 @@ public class StackValueCollection {
 
     }
 
+    public void pushLong(long l) {
+        byte[] bytes = BytesConverter.toBytes(l);
+
+        ByteBuffer bb = ByteBuffer.wrap(bytes);
+
+
+        int anInt1 = bb.getInt(0);
+
+        int anInt2 = bb.getInt(4);
+
+
+        push(new StackValue(BasicType.T_LONG, anInt1));
+
+        push(new StackValue(BasicType.T_LONG, anInt2));
+    }
+
     public double popDouble() {
         int i1 = pop().getVal();
         int i2 = pop().getVal();
@@ -56,11 +70,24 @@ public class StackValueCollection {
         bb.putInt(i2);
         bb.putInt(i1);
         bb.position(0);
-//        bb.order(ByteOrder.BIG_ENDIAN);
+
         double aDouble = bb.getDouble();
 
 
         return aDouble;
+    }
+
+    public long popLong() {
+        int i1 = pop().getVal();
+        int i2 = pop().getVal();
+
+        ByteBuffer bb = ByteBuffer.allocate(8);
+        bb.putInt(i2);
+        bb.putInt(i1);
+        bb.position(0);
+
+        long aLong = bb.getLong();
+        return aLong;
     }
 
     public StackValue pop() {
@@ -81,6 +108,14 @@ public class StackValueCollection {
         maxLocals = size;
 
         locals = new StackValue[size];
+    }
+
+    public void add(int index, StackValue value) {
+        getLocals()[index] = value;
+    }
+
+    public StackValue get(int index) {
+        return getLocals()[index];
     }
 
 

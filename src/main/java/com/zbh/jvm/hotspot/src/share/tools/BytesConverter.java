@@ -11,6 +11,12 @@ public class BytesConverter {
         return toInt(bytes, true);
     }
 
+    public static float toFloat(byte[] bytes) {
+
+        ByteBuffer bb = ByteBuffer.wrap(bytes);
+        return bb.getFloat();
+    }
+
     //long 最大8个字节
     public static long toLong(byte[] bytes) {
 
@@ -101,10 +107,33 @@ public class BytesConverter {
         return toBytes(d, true);
     }
 
+    public static byte[] toBytes(long l) {
+        return toBytes(l, true);
+    }
+
 
     public static byte[] toBytes(double d, boolean isBig) {
 
         long l = Double.doubleToLongBits(d);
+
+        byte[] bytes = new byte[8];
+
+        if (isBig) {
+            int max = 64 - 8;
+            for (int i = 0; i < 8; i++) {
+                bytes[i] = ((byte) ((l >> (max - i * 8)) & 0xFF));
+            }
+        } else {
+            for (int i = 0; i < 8; i++) {
+                bytes[i] = (byte) ((l >> i * 8) & 0xFF);
+            }
+        }
+
+        return bytes;
+    }
+
+    public static byte[] toBytes(long l, boolean isBig) {
+
 
         byte[] bytes = new byte[8];
 

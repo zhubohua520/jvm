@@ -61,6 +61,10 @@ public class ConstantPool {
         }
     }
 
+//    public float getFloat(Integer key){
+//        return (float)cpMap.get(key);
+//    }
+
 
     /**
      * 三种常量池类型：Fieldref_info,Methodref_info,InterfaceMethodref_info的结构是一样的
