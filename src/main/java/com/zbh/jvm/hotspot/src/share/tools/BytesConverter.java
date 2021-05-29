@@ -1,5 +1,7 @@
 package com.zbh.jvm.hotspot.src.share.tools;
 
+import java.nio.ByteBuffer;
+
 public class BytesConverter {
 
     private static final char[] hexCode = "0123456789ABCDEF".toCharArray();
@@ -8,6 +10,23 @@ public class BytesConverter {
     public static int toInt(byte[] bytes) throws Exception {
         return toInt(bytes, true);
     }
+
+    //long 最大8个字节
+    public static long toLong(byte[] bytes) {
+
+
+        ByteBuffer byteBuffer = ByteBuffer.wrap(bytes, 0, 8);
+
+
+        return byteBuffer.getLong();
+    }
+
+    public static double toDouble(byte[] bytes) {
+
+        ByteBuffer byteBuffer = ByteBuffer.wrap(bytes, 0, 8);
+        return byteBuffer.getDouble();
+    }
+
 
     public static int toInt(byte[] bytes, boolean isBig) throws Exception {
         if (bytes.length > 4) {
@@ -76,6 +95,33 @@ public class BytesConverter {
             return sb.reverse().toString();
         }
     }
+
+    //默认大端
+    public static byte[] toBytes(double d) {
+        return toBytes(d, true);
+    }
+
+
+    public static byte[] toBytes(double d, boolean isBig) {
+
+        long l = Double.doubleToLongBits(d);
+
+        byte[] bytes = new byte[8];
+
+        if (isBig) {
+            int max = 64 - 8;
+            for (int i = 0; i < 8; i++) {
+                bytes[i] = ((byte) ((l >> (max - i * 8)) & 0xFF));
+            }
+        } else {
+            for (int i = 0; i < 8; i++) {
+                bytes[i] = (byte) ((l >> i * 8) & 0xFF);
+            }
+        }
+
+        return bytes;
+    }
+
 
     public static void main(String[] args) throws Exception {
         byte[] bytes = new byte[]{0, 22};

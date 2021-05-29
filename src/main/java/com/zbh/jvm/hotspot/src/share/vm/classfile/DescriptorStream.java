@@ -35,15 +35,27 @@ public class DescriptorStream {
 
         Object[] objects = new Object[parameterTypes.size()];
         for (int i = 0; i < parameterTypes.size(); i++) {
-            StackValue stackValue = frame.getStack().pop();
+            StackValue stackValue = frame.getStack().peek();
 
             switch (stackValue.getType()) {
                 case BasicType.T_OBJECT: {
+                    stackValue = frame.getStack().pop();
                     objects[i] = stackValue.getObject();
                     break;
                 }
                 case BasicType.T_INT: {
+                    stackValue = frame.getStack().pop();
                     objects[i] = stackValue.getVal();
+                    break;
+                }
+                case BasicType.T_LONG: {
+                    stackValue = frame.getStack().pop();
+                    objects[i] = stackValue.getObject();
+                    break;
+                }
+                case BasicType.T_DOUBLE: {
+                    double d = frame.getStack().popDouble();
+                    objects[i] = d;
                     break;
                 }
                 default:
@@ -126,6 +138,29 @@ public class DescriptorStream {
                         returnClass = new ReturnClass();
                         returnClass.setAClass(int.class);
                         returnClass.setStackType(BasicType.T_INT);
+                    }
+                    break;
+                }
+                case BasicType.JVM_SIGNATURE_LONG: {
+                    logger.debug("类型为long");
+
+                    if (phase) {
+                        parameterTypes.add(long.class);
+                    } else {
+                        returnClass = new ReturnClass();
+                        returnClass.setAClass(long.class);
+                        returnClass.setStackType(BasicType.T_LONG);
+                    }
+                    break;
+                }
+                case BasicType.JVM_SIGNATURE_DOUBLE: {
+                    logger.debug("类型为double");
+                    if (phase) {
+                        parameterTypes.add(double.class);
+                    } else {
+                        returnClass = new ReturnClass();
+                        returnClass.setAClass(double.class);
+                        returnClass.setStackType(BasicType.T_DOUBLE);
                     }
                     break;
                 }

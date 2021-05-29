@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 public class ClassFileParser {
 
@@ -89,7 +90,7 @@ public class ClassFileParser {
         ConstantPool constantPool = new ConstantPool(count);
         //常量池从1开始
         int i = 1;
-        while (count - 1 > 0) {
+        while (i < count) {
             byte aByte = readByte(fis);
             int tag = BytesConverter.toInt(aByte);
 
@@ -187,12 +188,42 @@ public class ClassFileParser {
                             constantPool.get(i));
                     break;
                 }
+                case ConstantPool.JVM_CONSTANT_Long: {
+                    byte[] highBytes = readBytes(fis, 4);
+                    byte[] lowBytes = readBytes(fis, 4);
+
+                    byte[] bytes = Arrays.copyOf(highBytes,
+                            highBytes.length + lowBytes.length);
+                    System.arraycopy(lowBytes, 0, bytes, highBytes.length, lowBytes.length);
+
+                    constantPool.put(i, BytesConverter.toLong(bytes));
+
+                    logger.debug("解析第{}个:{},值:{}", i, "JVM_CONSTANT_Long",
+                            constantPool.get(i));
+                    i++;
+                    break;
+                }
+                case ConstantPool.JVM_CONSTANT_Double:{
+                    byte[] highBytes = readBytes(fis, 4);
+                    byte[] lowBytes = readBytes(fis, 4);
+
+                    byte[] bytes = Arrays.copyOf(highBytes,
+                            highBytes.length + lowBytes.length);
+                    System.arraycopy(lowBytes, 0, bytes, highBytes.length, lowBytes.length);
+
+                    constantPool.put(i, BytesConverter.toDouble(bytes));
+
+                    logger.debug("解析第{}个:{},值:{}", i, "JVM_CONSTANT_Double",
+                            constantPool.get(i));
+                    i++;
+                    break;
+                }
                 default:
                     throw new Exception("未知的常量池类型");
             }
 
 
-            count--;
+//            count--;
             i++;
         }
         instanceKlass.setConstantPool(constantPool);

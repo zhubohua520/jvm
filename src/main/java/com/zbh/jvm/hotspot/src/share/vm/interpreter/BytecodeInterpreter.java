@@ -143,6 +143,36 @@ public class BytecodeInterpreter {
 
                     break;
                 }
+                case ByteCodes._ldc2_w: {
+                    logger.debug("执行指令：{}", "ldc2_w");
+                    int key = BytesConverter.toInt(byteCode.read(2));
+                    //long or double
+                    int constantPoolTag = constantPool.getTag(key);
+
+                    switch (constantPoolTag) {
+                        case ConstantPool.JVM_CONSTANT_Long: {
+
+                            long l = (long) constantPool.get(key);
+                            frame.getStack().push(new StackValue(BasicType.T_LONG, l));
+
+                            break;
+                        }
+                        case ConstantPool.JVM_CONSTANT_Double: {
+
+                            double d = (double) constantPool.get(key);
+                            //TODO 这里没写完
+                            frame.getStack().pushDouble(d);
+
+                            break;
+                        }
+                        default:
+                            throw new Exception("未知的格式");
+
+                    }
+
+
+                    break;
+                }
                 default:
                     throw new Exception("未解析的字节码");
 
