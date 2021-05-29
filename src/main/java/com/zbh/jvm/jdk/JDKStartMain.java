@@ -12,7 +12,7 @@ public class JDKStartMain {
 
     public static void main(String[] args) throws Exception {
 
-        String path = "com.zbh.jvm.example.HelloWorld";
+        String path = "com.zbh.jvm.example.base.PrintLong";
         System.out.println(path);
 
         InstanceKlass instanceKlass = BootClassLoader.loadClass(path);

@@ -1,5 +1,8 @@
 package com.zbh.jvm.hotspot.src.share.vm.runtime;
 
+import lombok.Data;
+
+@Data
 public class StackValue {
 
     private int type;

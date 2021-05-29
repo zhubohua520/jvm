@@ -1,6 +1,7 @@
 package com.zbh.jvm.hotspot.src.share.vm.interpreter;
 
 import com.zbh.jvm.hotspot.src.share.tools.BytesConverter;
+import com.zbh.jvm.hotspot.src.share.vm.classfile.DescriptorStream;
 import com.zbh.jvm.hotspot.src.share.vm.oops.CodeAttribute;
 import com.zbh.jvm.hotspot.src.share.vm.oops.ConstantPool;
 import com.zbh.jvm.hotspot.src.share.vm.oops.Method;
@@ -64,7 +65,7 @@ public class BytecodeInterpreter {
                     switch (constantPoolTag) {
                         case ConstantPool.JVM_CONSTANT_String: {
 
-                            String str =  constantPool.getStr(key);
+                            String str = constantPool.getStr(key);
 
                             //TODO String也是OBJECT类型？
                             frame.getStack().push(new StackValue(BasicType.T_OBJECT, str));
@@ -92,12 +93,53 @@ public class BytecodeInterpreter {
 
                     //java类走反射逻辑
                     if (classInfo.startsWith("java")) {
+                        DescriptorStream descriptorStream = new DescriptorStream(descriptorName);
+                        descriptorStream.parseMethod();
 
+
+                        Class<?>[] parameterTypes = descriptorStream.getParameterTypes();
+
+
+                        DescriptorStream.ReturnClass returnClass = descriptorStream.getReturnClass();
+
+
+                        Object[] paramValues = descriptorStream.getParamValues(frame);
+
+
+                        Object object = frame.getStack().pop().getObject();
+
+                        java.lang.reflect.Method reflectMethod = object.getClass().getMethod(methodName, parameterTypes);
+
+
+                        Object returnValue = reflectMethod.invoke(object, paramValues);
+
+                        if (returnClass != null) {
+                            //TODO 压栈操作需要转化类型？暂时不理解
+                            frame.getStack().push(new StackValue(returnClass.getStackType(), returnValue));
+                        }
 
                     } else {
                         throw new Exception("暂时未实现");
                     }
 
+
+                    break;
+                }
+                case ByteCodes._return: {
+                    logger.debug("执行指令：{}", "return");
+
+                    //弹出栈帧
+                    thread.getStack().pop();
+
+                    logger.debug("剩余栈帧数量：{}", thread.getStack().size());
+
+
+                    break;
+                }
+                case ByteCodes._iconst_1: {
+                    logger.debug("执行指令：{}", "iconst_1");
+
+                    frame.getStack().push(new StackValue(BasicType.T_INT, 1));
 
                     break;
                 }

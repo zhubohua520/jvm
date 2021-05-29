@@ -22,7 +22,6 @@ public class BasicType {
     public static final int JVM_ACC_ENUM = 0x4000; /* field is declared as element of enum */
 
 
-
     public static final int T_BOOLEAN = 4;
     public static final int T_CHAR = 5;
     public static final int T_FLOAT = 6;
@@ -41,4 +40,22 @@ public class BasicType {
     public static final int T_CONFLICT = 19;        // for stack value type with conflicting contents
     public static final int T_ILLEGAL = 99;
     public static final int T_Throwable = 100;
+
+
+    public static final int JVM_SIGNATURE_ARRAY = '[';
+    public static final int JVM_SIGNATURE_BYTE = 'B';
+    public static final int JVM_SIGNATURE_CHAR = 'C';
+    public static final int JVM_SIGNATURE_CLASS = 'L';
+    public static final int JVM_SIGNATURE_ENDCLASS = ';';
+    public static final int JVM_SIGNATURE_ENUM = 'E';
+    public static final int JVM_SIGNATURE_FLOAT = 'F';
+    public static final int JVM_SIGNATURE_DOUBLE = 'D';
+    public static final int JVM_SIGNATURE_FUNC = '(';
+    public static final int JVM_SIGNATURE_ENDFUNC = ')';
+    public static final int JVM_SIGNATURE_INT = 'I';
+    public static final int JVM_SIGNATURE_LONG = 'J';
+    public static final int JVM_SIGNATURE_SHORT = 'S';
+    public static final int JVM_SIGNATURE_VOID = 'V';
+    public static final int JVM_SIGNATURE_BOOLEAN = 'Z';
+
 }
