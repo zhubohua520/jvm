@@ -1,5 +1,6 @@
 package com.zbh.jvm.hotspot.src.share.vm.classfile;
 
+import com.zbh.jvm.hotspot.src.share.tools.BytesConverter;
 import com.zbh.jvm.hotspot.src.share.vm.runtime.JavaVFrame;
 import com.zbh.jvm.hotspot.src.share.vm.runtime.StackValue;
 import com.zbh.jvm.hotspot.src.share.vm.utilities.BasicType;
@@ -55,7 +56,7 @@ public class DescriptorStream {
                 }
                 case BasicType.T_INT: {
                     stackValue = frame.getStack().pop();
-                    objects[i] = stackValue.getVal();
+                    objects[i] = BytesConverter.toInt(stackValue.getBytes());
                     break;
                 }
                 case BasicType.T_LONG: {
@@ -70,31 +71,25 @@ public class DescriptorStream {
                 }
                 case BasicType.T_FLOAT: {
                     stackValue = frame.getStack().pop();
-                    objects[i] = stackValue.getObject();
+                    objects[i] = BytesConverter.toFloat(stackValue.getBytes());
                     break;
                 }
                 case BasicType.T_CHAR: {
                     stackValue = frame.getStack().pop();
 
-                    objects[i] = (char) stackValue.getVal();
+                    objects[i] = BytesConverter.toChar(stackValue.getBytes());
                     break;
                 }
                 case BasicType.T_SHORT: {
                     stackValue = frame.getStack().pop();
 
-                    objects[i] = (short) stackValue.getVal();
+                    objects[i] = BytesConverter.toShort(stackValue.getBytes());
                     break;
                 }
                 case BasicType.T_BOOLEAN: {
                     stackValue = frame.getStack().pop();
-                    int val = stackValue.getVal();
-                    if (val == 0) {
-                        objects[i] = false;
-                    } else if (val == 1) {
-                        objects[i] = true;
-                    } else {
-                        throw new Exception("不应该发生的异常");
-                    }
+
+                    objects[i] = BytesConverter.toBoolean(stackValue.getBytes());
 
                     break;
                 }

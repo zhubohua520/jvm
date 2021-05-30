@@ -17,14 +17,111 @@ public class BytesConverter {
         return bb.getFloat();
     }
 
+    //默认大端
+    public static char toChar(byte[] bytes) {
+
+        ByteBuffer bb = ByteBuffer.wrap(bytes);
+
+        char c;
+
+        if (bytes.length > 2) {
+            c = bb.getChar(bytes.length - 2);
+        } else if (bytes.length == 2) {
+            c = bb.getChar();
+        } else if (bytes.length == 1) {
+            bb = ByteBuffer.wrap(new byte[]{0, bytes[0]});
+            c = bb.getChar();
+        } else {
+            c = 0;
+        }
+
+
+        return c;
+    }
+
+
+    public static byte[] toBytes(float f) {
+        return toBytes(f, true);
+    }
+
+    public static byte[] toBytes(float f, boolean isBig) {
+
+        int castInt = Float.floatToIntBits(f);
+
+        return toBytes(castInt, isBig);
+
+    }
+
+    public static byte[] toBytes(short s) {
+        return toBytes(s, true);
+    }
+
+    public static byte[] toBytes(short s, boolean isBig) {
+
+        byte[] bytes = new byte[2];
+
+
+        if (isBig) {
+            int max = 16 - 8;
+            for (int i = 0; i < 2; i++) {
+                bytes[i] = ((byte) ((s >> (max - i * 8)) & 0xFF));
+            }
+        } else {
+            for (int i = 0; i < 2; i++) {
+                bytes[i] = (byte) ((s >> i * 8) & 0xFF);
+            }
+        }
+
+
+        return bytes;
+    }
+
+    public static byte[] toBytes(int i) {
+        return toBytes(i, true);
+    }
+
+    public static byte[] toBytes(int sourceInt, boolean isBig) {
+        byte[] bytes = new byte[4];
+
+
+        if (isBig) {
+            int max = 32 - 8;
+            for (int i = 0; i < 4; i++) {
+                bytes[i] = ((byte) ((sourceInt >> (max - i * 8)) & 0xFF));
+            }
+        } else {
+            for (int i = 0; i < 4; i++) {
+                bytes[i] = (byte) ((sourceInt >> i * 8) & 0xFF);
+            }
+        }
+
+
+        return bytes;
+    }
+
     //long 最大8个字节
     public static long toLong(byte[] bytes) {
 
 
-        ByteBuffer byteBuffer = ByteBuffer.wrap(bytes, 0, 8);
+        ByteBuffer bb = ByteBuffer.allocate(8);
+
+        if (bytes.length < 8) {
+            bb.put(new byte[8 - bytes.length]);
+            bb.put(bytes);
+            bb.position(0);
+            return bb.getLong();
+        } else if (bytes.length > 8) {
+            bb.put(bytes, bytes.length - 8, 8);
+            bb.position(0);
+            return bb.getLong(bytes.length - 8);
+        } else {
+            bb.put(bytes);
+            bb.position(0);
+            return bb.getLong();
+        }
 
 
-        return byteBuffer.getLong();
+
     }
 
     public static double toDouble(byte[] bytes) {
@@ -39,30 +136,42 @@ public class BytesConverter {
             throw new Exception("bytes length too long!");
         }
 
-        int result = 0;
-
-        int cursor = 0;
+        ByteBuffer bb = ByteBuffer.allocate(4);
 
         if (isBig) {
-            for (int i = bytes.length - 1; i >= 0; i--) {
-                byte aByte = bytes[i];
-                result |= aByte << cursor;
-                cursor += 8;
+            if (bytes.length < 4) {
+                bb.put(new byte[4 - bytes.length]);
+                bb.put(bytes);
+                bb.position(0);
+                return bb.getInt();
+            } else if (bytes.length > 4) {
+                bb.put(bytes, bytes.length - 4, 4);
+                bb.position(0);
+                return bb.getInt(bytes.length - 4);
+            } else {
+                bb.put(bytes);
+                bb.position(0);
+                return bb.getInt();
             }
         } else {
-            for (byte aByte : bytes) {
-                result |= aByte << cursor;
-                cursor += 8;
-            }
+            throw new Exception("暂时不支持小端");
         }
 
-
-        return result;
     }
 
 
     public static int toInt(byte aByte) throws Exception {
         return toInt(new byte[]{aByte}, true);
+    }
+
+    public static short toShort(byte[] bytes) {
+        ByteBuffer bb = ByteBuffer.wrap(bytes);
+        return bb.getShort();
+    }
+
+    public static boolean toBoolean(byte[] bytes) {
+
+        return bytes[0] != 0;
     }
 
     public static int toUnsignedInt(byte aByte) {
@@ -111,27 +220,6 @@ public class BytesConverter {
         return toBytes(l, true);
     }
 
-
-    public static byte[] toBytes(double d, boolean isBig) {
-
-        long l = Double.doubleToLongBits(d);
-
-        byte[] bytes = new byte[8];
-
-        if (isBig) {
-            int max = 64 - 8;
-            for (int i = 0; i < 8; i++) {
-                bytes[i] = ((byte) ((l >> (max - i * 8)) & 0xFF));
-            }
-        } else {
-            for (int i = 0; i < 8; i++) {
-                bytes[i] = (byte) ((l >> i * 8) & 0xFF);
-            }
-        }
-
-        return bytes;
-    }
-
     public static byte[] toBytes(long l, boolean isBig) {
 
 
@@ -149,6 +237,28 @@ public class BytesConverter {
         }
 
         return bytes;
+    }
+
+    public static byte[] toBytes(boolean b) {
+
+
+        byte[] bytes = new byte[1];
+
+        if (b) {
+            bytes[0] = 1;
+        } else {
+            bytes[0] = 0;
+        }
+
+        return bytes;
+    }
+
+    public static byte[] toBytes(double d, boolean isBig) {
+
+        long l = Double.doubleToLongBits(d);
+
+        return toBytes(l, isBig);
+
     }
 
 

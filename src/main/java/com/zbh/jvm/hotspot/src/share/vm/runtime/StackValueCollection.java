@@ -38,10 +38,12 @@ public class StackValueCollection {
 
         int anInt2 = bb.getInt(4);
 
+        byte[] bytes1 = BytesConverter.toBytes(anInt1);
+        byte[] bytes2 = BytesConverter.toBytes(anInt2);
 
-        push(new StackValue(BasicType.T_DOUBLE, anInt1));
+        push(new StackValue(BasicType.T_DOUBLE, bytes1));
 
-        push(new StackValue(BasicType.T_DOUBLE, anInt2));
+        push(new StackValue(BasicType.T_DOUBLE, bytes2));
 
 
     }
@@ -56,19 +58,29 @@ public class StackValueCollection {
 
         int anInt2 = bb.getInt(4);
 
+        byte[] bytes1 = BytesConverter.toBytes(anInt1);
+        byte[] bytes2 = BytesConverter.toBytes(anInt2);
 
-        push(new StackValue(BasicType.T_LONG, anInt1));
+        push(new StackValue(BasicType.T_LONG, bytes1));
 
-        push(new StackValue(BasicType.T_LONG, anInt2));
+        push(new StackValue(BasicType.T_LONG, bytes2));
     }
 
     public double popDouble() {
-        int i1 = pop().getVal();
-        int i2 = pop().getVal();
+
+        byte[] bytes1 = pop().getBytes();
+        byte[] bytes2 = pop().getBytes();
+
+//        int i1 = pop().getVal();
+//        int i2 = pop().getVal();
 
         ByteBuffer bb = ByteBuffer.allocate(8);
-        bb.putInt(i2);
-        bb.putInt(i1);
+
+        bb.put(bytes2);
+        bb.put(bytes1);
+
+//        bb.putInt(i2);
+//        bb.putInt(i1);
         bb.position(0);
 
         double aDouble = bb.getDouble();
@@ -78,12 +90,20 @@ public class StackValueCollection {
     }
 
     public long popLong() {
-        int i1 = pop().getVal();
-        int i2 = pop().getVal();
+
+
+        byte[] bytes1 = pop().getBytes();
+        byte[] bytes2 = pop().getBytes();
+
+//        int i1 = pop().getVal();
+//        int i2 = pop().getVal();
 
         ByteBuffer bb = ByteBuffer.allocate(8);
-        bb.putInt(i2);
-        bb.putInt(i1);
+
+        bb.put(bytes2);
+        bb.put(bytes1);
+//        bb.putInt(i2);
+//        bb.putInt(i1);
         bb.position(0);
 
         long aLong = bb.getLong();

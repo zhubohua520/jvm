@@ -74,8 +74,8 @@ public class BytecodeInterpreter {
                         }
                         case ConstantPool.JVM_CONSTANT_Float: {
                             float aFloat = (float) constantPool.get(key);
-
-                            frame.getStack().push(new StackValue(BasicType.T_FLOAT, aFloat));
+                            byte[] bytes = BytesConverter.toBytes(aFloat);
+                            frame.getStack().push(new StackValue(BasicType.T_FLOAT, bytes));
                             break;
                         }
                         default:
@@ -121,7 +121,66 @@ public class BytecodeInterpreter {
 
                         if (returnClass != null) {
                             //TODO 压栈操作需要转化类型？暂时不理解
-                            frame.getStack().push(new StackValue(returnClass.getStackType(), returnValue));
+
+                            int stackType = returnClass.getStackType();
+                            StackValue stackValue;
+                            switch (stackType) {
+                                case BasicType.T_BOOLEAN: {
+                                    boolean b = (boolean) returnValue;
+                                    stackValue = new StackValue(stackType, BytesConverter.toBytes(b));
+                                    frame.getStack().push(stackValue);
+                                    break;
+                                }
+                                case BasicType.T_CHAR: {
+                                    char c = (char) returnValue;
+                                    stackValue = new StackValue(stackType, BytesConverter.toBytes(c));
+                                    frame.getStack().push(stackValue);
+                                    break;
+                                }
+                                case BasicType.T_FLOAT: {
+                                    float f = (float) returnValue;
+                                    stackValue = new StackValue(stackType, BytesConverter.toBytes(f));
+                                    frame.getStack().push(stackValue);
+                                    break;
+                                }
+                                case BasicType.T_DOUBLE: {
+                                    double d = (double) returnValue;
+                                    frame.getStack().pushDouble(d);
+                                    break;
+                                }
+                                case BasicType.T_BYTE: {
+                                    byte b = (byte) returnValue;
+                                    stackValue = new StackValue(stackType, new byte[]{b});
+                                    frame.getStack().push(stackValue);
+                                    break;
+                                }
+                                case BasicType.T_SHORT: {
+                                    short s = (short) returnValue;
+                                    stackValue = new StackValue(stackType, BytesConverter.toBytes(s));
+                                    frame.getStack().push(stackValue);
+                                    break;
+                                }
+                                case BasicType.T_INT: {
+                                    int i = (int) returnValue;
+                                    stackValue = new StackValue(stackType, BytesConverter.toBytes(i));
+                                    frame.getStack().push(stackValue);
+                                    break;
+                                }
+                                case BasicType.T_LONG: {
+                                    long l = (long) returnValue;
+                                    frame.getStack().pushLong(l);
+                                    break;
+                                }
+                                case BasicType.T_OBJECT: {
+                                    stackValue = new StackValue(stackType, returnValue);
+                                    frame.getStack().push(stackValue);
+                                    break;
+                                }
+                                default:
+                                    throw new Exception("未解析的异常");
+                            }
+
+
                         }
 
                     } else {
@@ -145,43 +204,43 @@ public class BytecodeInterpreter {
                 //region iconst
                 case ByteCodes._iconst_0: {
                     logger.debug("执行指令：{}", "iconst_0");
-
-                    frame.getStack().push(new StackValue(BasicType.T_INT, 0));
+                    byte[] bytes = BytesConverter.toBytes(0);
+                    frame.getStack().push(new StackValue(BasicType.T_INT, bytes));
 
                     break;
                 }
                 case ByteCodes._iconst_1: {
                     logger.debug("执行指令：{}", "iconst_1");
-
-                    frame.getStack().push(new StackValue(BasicType.T_INT, 1));
+                    byte[] bytes = BytesConverter.toBytes(1);
+                    frame.getStack().push(new StackValue(BasicType.T_INT, bytes));
 
                     break;
                 }
                 case ByteCodes._iconst_2: {
                     logger.debug("执行指令：{}", "iconst_2");
-
-                    frame.getStack().push(new StackValue(BasicType.T_INT, 2));
+                    byte[] bytes = BytesConverter.toBytes(2);
+                    frame.getStack().push(new StackValue(BasicType.T_INT, bytes));
 
                     break;
                 }
                 case ByteCodes._iconst_3: {
                     logger.debug("执行指令：{}", "iconst_3");
-
-                    frame.getStack().push(new StackValue(BasicType.T_INT, 3));
+                    byte[] bytes = BytesConverter.toBytes(3);
+                    frame.getStack().push(new StackValue(BasicType.T_INT, bytes));
 
                     break;
                 }
                 case ByteCodes._iconst_4: {
                     logger.debug("执行指令：{}", "iconst_4");
-
-                    frame.getStack().push(new StackValue(BasicType.T_INT, 4));
+                    byte[] bytes = BytesConverter.toBytes(4);
+                    frame.getStack().push(new StackValue(BasicType.T_INT, bytes));
 
                     break;
                 }
                 case ByteCodes._iconst_5: {
                     logger.debug("执行指令：{}", "iconst_5");
-
-                    frame.getStack().push(new StackValue(BasicType.T_INT, 5));
+                    byte[] bytes = BytesConverter.toBytes(5);
+                    frame.getStack().push(new StackValue(BasicType.T_INT, bytes));
 
                     break;
                 }
@@ -435,12 +494,73 @@ public class BytecodeInterpreter {
 
                     int value = BytesConverter.toInt(byteCode.read());
 
-
-
-                    frame.getStack().push(new StackValue(BasicType.T_INT, value));
+                    byte[] bytes = BytesConverter.toBytes(value);
+                    frame.getStack().push(new StackValue(BasicType.T_INT, bytes));
 
                     break;
                 }
+                case ByteCodes._sipush: {
+                    logger.debug("执行指令：{}", "sipush");
+
+                    short value = BytesConverter.toShort(byteCode.read(2));
+
+                    byte[] bytes = BytesConverter.toBytes(value);
+
+                    frame.getStack().push(new StackValue(BasicType.T_SHORT, bytes));
+
+
+                    break;
+                }
+                //region i2
+                case ByteCodes._i2l: {
+                    logger.debug("执行指令：{}", "i2l");
+
+
+                    StackValue stackValue = frame.getStack().pop();
+
+//                    int value = stackValue.getVal();
+//                    long aLong = value & 0x00FF;
+
+                    byte[] bytes = stackValue.getBytes();
+                    long aLong = BytesConverter.toLong(bytes);
+
+                    frame.getStack().pushLong(aLong);
+
+                    break;
+                }
+                case ByteCodes._i2f: {
+                    logger.debug("执行指令：{}", "i2f");
+
+
+                    StackValue stackValue = frame.getStack().pop();
+
+                    byte[] bytes = stackValue.getBytes();
+
+                    int anInt = BytesConverter.toInt(bytes);
+
+                    float aFloat = (float) anInt;
+                    bytes = BytesConverter.toBytes(aFloat);
+
+                    frame.getStack().push(new StackValue(BasicType.T_FLOAT, bytes));
+
+                    break;
+                }
+                case ByteCodes._i2d: {
+                    logger.debug("执行指令：{}", "i2d");
+
+
+                    StackValue stackValue = frame.getStack().pop();
+
+                    byte[] bytes = stackValue.getBytes();
+                    int anInt = BytesConverter.toInt(bytes);
+
+                    double aDouble = anInt;
+
+                    frame.getStack().pushDouble(aDouble);
+
+                    break;
+                }
+                //endregion
                 default:
                     throw new Exception("未解析的字节码");
 
