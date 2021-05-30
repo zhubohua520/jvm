@@ -106,7 +106,7 @@ public class BytecodeInterpreter {
                         Class<?>[] parameterTypes = descriptorStream.getParameterTypes();
 
 
-                        DescriptorStream.ReturnClass returnClass = descriptorStream.getReturnClass();
+                        DescriptorStream.ClassInfo returnClass = descriptorStream.getReturnClass();
 
 
                         Object[] paramValues = descriptorStream.getParamValues(frame);
@@ -142,6 +142,14 @@ public class BytecodeInterpreter {
 
                     break;
                 }
+                //region iconst
+                case ByteCodes._iconst_0: {
+                    logger.debug("执行指令：{}", "iconst_0");
+
+                    frame.getStack().push(new StackValue(BasicType.T_INT, 0));
+
+                    break;
+                }
                 case ByteCodes._iconst_1: {
                     logger.debug("执行指令：{}", "iconst_1");
 
@@ -149,6 +157,35 @@ public class BytecodeInterpreter {
 
                     break;
                 }
+                case ByteCodes._iconst_2: {
+                    logger.debug("执行指令：{}", "iconst_2");
+
+                    frame.getStack().push(new StackValue(BasicType.T_INT, 2));
+
+                    break;
+                }
+                case ByteCodes._iconst_3: {
+                    logger.debug("执行指令：{}", "iconst_3");
+
+                    frame.getStack().push(new StackValue(BasicType.T_INT, 3));
+
+                    break;
+                }
+                case ByteCodes._iconst_4: {
+                    logger.debug("执行指令：{}", "iconst_4");
+
+                    frame.getStack().push(new StackValue(BasicType.T_INT, 4));
+
+                    break;
+                }
+                case ByteCodes._iconst_5: {
+                    logger.debug("执行指令：{}", "iconst_5");
+
+                    frame.getStack().push(new StackValue(BasicType.T_INT, 5));
+
+                    break;
+                }
+                //endregion
                 case ByteCodes._ldc2_w: {
                     logger.debug("执行指令：{}", "ldc2_w");
                     int key = BytesConverter.toInt(byteCode.read(2));
@@ -179,6 +216,7 @@ public class BytecodeInterpreter {
 
                     break;
                 }
+                //region istore
                 case ByteCodes._istore_1: {
                     logger.debug("执行指令：{}", "istore_1");
 
@@ -200,6 +238,8 @@ public class BytecodeInterpreter {
                     frame.getLocals().add(3, value);
                     break;
                 }
+                //endregion
+                //region iload
                 case ByteCodes._iload_1: {
                     logger.debug("执行指令：{}", "iload_1");
 
@@ -221,6 +261,8 @@ public class BytecodeInterpreter {
                     frame.getStack().push(stackValue);
                     break;
                 }
+                //endregion iload
+                //region lstore
                 case ByteCodes._lstore_1: {
                     logger.debug("执行指令：{}", "lstore_1");
 
@@ -248,6 +290,8 @@ public class BytecodeInterpreter {
                     frame.getLocals().add(4, value1);
                     break;
                 }
+                //endregion
+                //region lload
                 case ByteCodes._lload_1: {
                     logger.debug("执行指令：{}", "lload_1");
 
@@ -278,6 +322,8 @@ public class BytecodeInterpreter {
 
                     break;
                 }
+                //endregion
+                //region dstore
                 case ByteCodes._dstore_1: {
                     logger.debug("执行指令：{}", "dstore_1");
 
@@ -305,6 +351,8 @@ public class BytecodeInterpreter {
                     frame.getLocals().add(4, value1);
                     break;
                 }
+                //endregion
+                //region dload
                 case ByteCodes._dload_1: {
                     logger.debug("执行指令：{}", "dload_1");
 
@@ -335,6 +383,8 @@ public class BytecodeInterpreter {
 
                     break;
                 }
+                //endregion
+                //region fstore
                 case ByteCodes._fstore_1: {
                     logger.debug("执行指令：{}", "fstore_1");
 
@@ -356,6 +406,8 @@ public class BytecodeInterpreter {
                     frame.getLocals().add(3, value);
                     break;
                 }
+                //endregion
+                //region fload
                 case ByteCodes._fload_1: {
                     logger.debug("执行指令：{}", "fload_1");
 
@@ -375,6 +427,18 @@ public class BytecodeInterpreter {
 
                     StackValue stackValue = frame.getLocals().get(3);
                     frame.getStack().push(stackValue);
+                    break;
+                }
+                //endregion
+                case ByteCodes._bipush: {
+                    logger.debug("执行指令：{}", "bipush");
+
+                    int value = BytesConverter.toInt(byteCode.read());
+
+
+
+                    frame.getStack().push(new StackValue(BasicType.T_INT, value));
+
                     break;
                 }
                 default:

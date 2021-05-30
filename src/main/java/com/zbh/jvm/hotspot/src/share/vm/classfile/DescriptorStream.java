@@ -19,25 +19,35 @@ public class DescriptorStream {
 
     private String descriptor;
 
-    private List<Class<?>> parameterTypes = new ArrayList<>(); //方法参数类型
+    private List<ClassInfo> parameterTypes = new ArrayList<>(); //方法参数类型
 
     //有返回类型证明有返回值，返回类型为null,证明没有返回值
-    private ReturnClass returnClass; //返回类型
+    private ClassInfo returnClass; //返回类型
 
 
     private final Map<String, Class<?>> classMap = new HashMap<>();
 
     public Class<?>[] getParameterTypes() {
-        return parameterTypes.toArray(new Class<?>[0]);
+
+        Class<?>[] classes = new Class[parameterTypes.size()];
+        for (int i = 0; i < parameterTypes.size(); i++) {
+            ClassInfo classInfo = parameterTypes.get(i);
+
+            classes[i] = classInfo.getAClass();
+
+
+        }
+
+        return classes;
     }
 
     public Object[] getParamValues(JavaVFrame frame) throws Exception {
 
         Object[] objects = new Object[parameterTypes.size()];
         for (int i = 0; i < parameterTypes.size(); i++) {
-            StackValue stackValue = frame.getStack().peek();
-
-            switch (stackValue.getType()) {
+            StackValue stackValue;
+            ClassInfo classInfo = parameterTypes.get(i);
+            switch (classInfo.getStackType()) {
                 case BasicType.T_OBJECT: {
                     stackValue = frame.getStack().pop();
                     objects[i] = stackValue.getObject();
@@ -61,6 +71,31 @@ public class DescriptorStream {
                 case BasicType.T_FLOAT: {
                     stackValue = frame.getStack().pop();
                     objects[i] = stackValue.getObject();
+                    break;
+                }
+                case BasicType.T_CHAR: {
+                    stackValue = frame.getStack().pop();
+
+                    objects[i] = (char) stackValue.getVal();
+                    break;
+                }
+                case BasicType.T_SHORT: {
+                    stackValue = frame.getStack().pop();
+
+                    objects[i] = (short) stackValue.getVal();
+                    break;
+                }
+                case BasicType.T_BOOLEAN: {
+                    stackValue = frame.getStack().pop();
+                    int val = stackValue.getVal();
+                    if (val == 0) {
+                        objects[i] = false;
+                    } else if (val == 1) {
+                        objects[i] = true;
+                    } else {
+                        throw new Exception("不应该发生的异常");
+                    }
+
                     break;
                 }
                 default:
@@ -118,12 +153,13 @@ public class DescriptorStream {
 
 
                     Class<?> clazz = getClassByPath(sb.toString());
+                    ClassInfo classInfo = new ClassInfo();
+                    classInfo.setAClass(clazz);
+                    classInfo.setStackType(BasicType.T_OBJECT);
                     if (phase) {
-                        parameterTypes.add(clazz);
+                        parameterTypes.add(classInfo);
                     } else {
-                        returnClass = new ReturnClass();
-                        returnClass.setAClass(clazz);
-                        returnClass.setStackType(BasicType.T_OBJECT);
+                        returnClass = classInfo;
                     }
 
 
@@ -137,46 +173,79 @@ public class DescriptorStream {
                 case BasicType.JVM_SIGNATURE_INT: {
                     logger.debug("类型为int");
 
+                    ClassInfo classInfo = new ClassInfo();
+                    classInfo.setAClass(int.class);
+                    classInfo.setStackType(BasicType.T_INT);
+
                     if (phase) {
-                        parameterTypes.add(int.class);
+                        parameterTypes.add(classInfo);
                     } else {
-                        returnClass = new ReturnClass();
-                        returnClass.setAClass(int.class);
-                        returnClass.setStackType(BasicType.T_INT);
+                        returnClass = classInfo;
                     }
                     break;
                 }
                 case BasicType.JVM_SIGNATURE_LONG: {
                     logger.debug("类型为long");
 
+                    ClassInfo classInfo = new ClassInfo();
+                    classInfo.setAClass(long.class);
+                    classInfo.setStackType(BasicType.T_LONG);
+
                     if (phase) {
-                        parameterTypes.add(long.class);
+                        parameterTypes.add(classInfo);
                     } else {
-                        returnClass = new ReturnClass();
-                        returnClass.setAClass(long.class);
-                        returnClass.setStackType(BasicType.T_LONG);
+                        returnClass = classInfo;
                     }
                     break;
                 }
                 case BasicType.JVM_SIGNATURE_DOUBLE: {
                     logger.debug("类型为double");
+
+                    ClassInfo classInfo = new ClassInfo();
+                    classInfo.setAClass(double.class);
+                    classInfo.setStackType(BasicType.T_DOUBLE);
+
                     if (phase) {
-                        parameterTypes.add(double.class);
+                        parameterTypes.add(classInfo);
                     } else {
-                        returnClass = new ReturnClass();
-                        returnClass.setAClass(double.class);
-                        returnClass.setStackType(BasicType.T_DOUBLE);
+                        returnClass = classInfo;
                     }
                     break;
                 }
-                case BasicType.JVM_SIGNATURE_FLOAT:{
+                case BasicType.JVM_SIGNATURE_FLOAT: {
                     logger.debug("类型为float");
+                    ClassInfo classInfo = new ClassInfo();
+                    classInfo.setAClass(float.class);
+                    classInfo.setStackType(BasicType.T_FLOAT);
+
                     if (phase) {
-                        parameterTypes.add(float.class);
+                        parameterTypes.add(classInfo);
                     } else {
-                        returnClass = new ReturnClass();
-                        returnClass.setAClass(float.class);
-                        returnClass.setStackType(BasicType.T_FLOAT);
+                        returnClass = classInfo;
+                    }
+                    break;
+                }
+                case BasicType.JVM_SIGNATURE_BOOLEAN: {
+                    logger.debug("类型为boolean");
+                    ClassInfo classInfo = new ClassInfo();
+                    classInfo.setAClass(boolean.class);
+                    classInfo.setStackType(BasicType.T_BOOLEAN);
+                    if (phase) {
+                        parameterTypes.add(classInfo);
+                    } else {
+                        returnClass = classInfo;
+                    }
+                    break;
+                }
+                case BasicType.JVM_SIGNATURE_CHAR: {
+                    logger.debug("类型为char");
+                    ClassInfo classInfo = new ClassInfo();
+                    classInfo.setAClass(char.class);
+                    classInfo.setStackType(BasicType.T_CHAR);
+                    if (phase) {
+                        parameterTypes.add(classInfo);
+                    } else {
+                        returnClass = classInfo;
                     }
                     break;
                 }
@@ -208,7 +277,7 @@ public class DescriptorStream {
 
 
     @Data
-    public class ReturnClass {
+    public class ClassInfo {
 
         private Class<?> aClass;
 
